@@ -1,4 +1,4 @@
-package services;
+package services.smartfeatures;
 
 public interface UnbondedBTSignal {
 }
