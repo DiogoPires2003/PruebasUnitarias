@@ -1,6 +1,9 @@
 package services.smartfeatures;
 
-public interface QRDecoder {
-    VehicleId getVehicleID(BufferedImage QRImg) throws CorruptedImgException;
+import data.*;
+import java.awt.image.BufferedImage;
+import exceptions.*;
 
+public interface QRDecoder {
+    VehicleID getVehicleID(BufferedImage QRImg) throws CorruptedImgException;
 }

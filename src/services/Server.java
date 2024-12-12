@@ -1,5 +1,12 @@
 package services;
 
+import data.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import micromobility.*;
+import exceptions.*;
+
 public interface Server {
 
     // External service for the persistent storage
