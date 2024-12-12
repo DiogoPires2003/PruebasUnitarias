@@ -1,14 +1,23 @@
 package micromobility;
-import data.GeographicPoint;
+import data.*;
 
 public class PMVehicle {
 
+    private VehicleID id;
     private PMVState state;
     private GeographicPoint location;
 
-    public PMVehicle(PMVState state, GeographicPoint initialLocation) {
-        this.state = state;
-        this.location = initialLocation;
+    public PMVehicle(VehicleID id, GeographicPoint location) {
+        if (id == null || location == null) {
+            throw new IllegalArgumentException("VehicleID and location cannot be null.");
+        }
+        this.id = id;
+        this.location = location;
+        this.state = PMVState.Available;
+    }
+
+    public VehicleID getId() {
+        return id;
     }
 
     public PMVState getState() {
@@ -28,11 +37,14 @@ public class PMVehicle {
     }
 
     public void setAvailb() {
-        this.state = PMVState.Availbale;
+        this.state = PMVState.Available;
     }
 
-    public void setLocation(GeographicPoint gP) {
-        this.location = gP;
+    public void setLocation(GeographicPoint location) {
+        if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null.");
+        }
+        this.location = location;
     }
 }
 
