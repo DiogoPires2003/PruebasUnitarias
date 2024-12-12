@@ -1,66 +1,61 @@
 package micromobility;
 
 import java.time.LocalDateTime;
+import data.*;
 
 public class JourneyService {
 
-    private String vehicleId;
-    private String userId;
-    private LocalDateTime serviceStart;
-    private LocalDateTime serviceEnd;
-    private double distance;
-    private double cost;
+    private UserAccount user;
+    private PMVehicle vehicle;
+    private GeographicPoint startLocation;
+    private GeographicPoint endLocation;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
-    public JourneyService(String vehicleId, String userId) {
-        this.vehicleId = vehicleId;
-        this.userId = userId;
-        this.serviceStart = null;
-        this.serviceEnd = null;
-        this.distance = 0.0;
-        this.cost = 0.0;
+    public JourneyService(UserAccount user, PMVehicle vehicle, GeographicPoint startLocation, LocalDateTime startTime) {
+        if (user == null || vehicle == null || startLocation == null || startTime == null) {
+            throw new IllegalArgumentException("None of the arguments can be null.");
+        }
+        this.user = user;
+        this.vehicle = vehicle;
+        this.startLocation = startLocation;
+        this.startTime = startTime;
     }
 
-    public String getVehicleId() {
-        return vehicleId;
+    public UserAccount getUser() {
+        return user;
     }
 
-    public String getUserId() {
-        return userId;
+    public PMVehicle getVehicle() {
+        return vehicle;
     }
 
-    public LocalDateTime getServiceStart() {
-        return serviceStart;
+    public GeographicPoint getStartLocation() {
+        return startLocation;
     }
 
-    public LocalDateTime getServiceEnd() {
-        return serviceEnd;
+    public GeographicPoint getEndLocation() {
+        return endLocation;
     }
 
-    public double getDistance() {
-        return distance;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public double getCost() {
-        return cost;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     public void setServiceInit() {
-        this.serviceStart = LocalDateTime.now();
+        vehicle.setUnderWay();
     }
 
-    public void setServiceFinish() {
-        this.serviceEnd = LocalDateTime.now();
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
-    }
-
-    public boolean isServiceActive() {
-        return serviceStart != null && serviceEnd == null;
+    public void setServiceFinish(GeographicPoint endLocation, LocalDateTime endTime) {
+        if (endLocation == null || endTime == null) {
+            throw new IllegalArgumentException("End location and end time cannot be null.");
+        }
+        this.endLocation = endLocation;
+        this.endTime = endTime;
+        vehicle.setAvailb();
     }
 }

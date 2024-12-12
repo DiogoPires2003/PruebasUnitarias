@@ -1,107 +1,87 @@
 package micromobility;
 
+import data.*;
 import services.*;
 import services.smartfeatures.*;
-import data.*;
-import exceptions.*;
-import java.time.LocalDateTime;
+import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 import java.net.ConnectException;
+import java.time.LocalDateTime;
 
+/**
+ * Handles the realization of journeys, managing events and dependencies.
+ */
 public class JourneyRealizeHandler {
 
-    private final QRDecoder qrDecoder;
-    private final Server server;
-    private JourneyService currentJourney;
+    private Server server;
+    private QRDecoder qrDecoder;
+    private ArduinoMicroController arduinoMicroController;
+    private UnbondedBTSignal btSignal;
 
-    // Constructor donde se inyectan dependencias
-    public JourneyRealizeHandler(QRDecoder qrDecoder, Server server) {
-        this.qrDecoder = qrDecoder;
+    public JourneyRealizeHandler(Server server, QRDecoder qrDecoder, ArduinoMicroController arduinoMicroController, UnbondedBTSignal btSignal) {
+        if (server == null || qrDecoder == null || arduinoMicroController == null || btSignal == null) {
+            throw new IllegalArgumentException("Dependencies cannot be null.");
+        }
         this.server = server;
-        this.currentJourney = null; // No hay un viaje activo inicialmente
+        this.qrDecoder = qrDecoder;
+        this.arduinoMicroController = arduinoMicroController;
+        this.btSignal = btSignal;
     }
 
-    public void scanQR() throws ConnectException, InvalidPairingArgsException,
-            CorruptedImgException, PMVNotAvailException, ProceduralException {
-        try {
-            String qrData = qrDecoder.decodeQR();
-            if (!server.checkPMVAvail(qrData)) {
-                throw new PMVNotAvailException("Vehicle is not available.");
-            }
-            server.prepareJourney(qrData);
+    public void scanQR(BufferedImage qrImage, UserAccount user, StationID stationID, GeographicPoint location, LocalDateTime date)
+            throws ConnectException, InvalidPairingArgsException, CorruptedImgException, PMVNotAvailException, ProceduralException {
+        VehicleID vehicleID = qrDecoder.getVehicleID(qrImage);
+        server.checkPMVAvail(vehicleID);
 
-            // Crear un nuevo JourneyService para el estado del viaje
-            this.currentJourney = new JourneyService(qrData, "currentUserId"); // Usar ID de usuario actual
-        } catch (ConnectException | InvalidPairingArgsException | CorruptedImgException e) {
-            // Catching specific exceptions here just to re-throw them
-            throw e;
-        }
+        PMVehicle vehicle = new PMVehicle(vehicleID, location);
+        JourneyService journeyService = new JourneyService(user, vehicle, location, date);
+
+        server.registerPairing(user, vehicleID, stationID, location, date);
+        vehicle.setNotAvailb();
+        journeyService.setServiceInit();
     }
 
-    public void unPairVehicle() throws ConnectException, InvalidPairingArgsException,
-            PairingNotFoundException, ProceduralException {
-        if (currentJourney == null || !currentJourney.isServiceActive()) {
-            throw new ProceduralException("No active journey to unpair.");
-        }
-        try {
-            server.finishJourney();
-            currentJourney.setServiceFinish();
-        } catch (ConnectException | InvalidPairingArgsException | PairingNotFoundException e) {
-            // Pass exception up
-            throw e;
-        }
+    public void unPairVehicle(UserAccount user, PMVehicle vehicle, StationID stationID, GeographicPoint location, LocalDateTime date, float averageSpeed, float distance, int duration, BigDecimal amount)
+            throws ConnectException, InvalidPairingArgsException, PairingNotFoundException, ProceduralException {
+        server.stopPairing(user, vehicle.getId(), stationID, location, date, averageSpeed, distance, duration, amount);
+        vehicle.setAvailb();
+        vehicle.setLocation(location);
     }
 
-    public void broadcastStationID(StationID stID) throws ConnectException {
-        try {
-            server.broadcastStation(stID); // Assuming there is a method server.broadcastStation()
-        } catch (ConnectException e) {
-            throw e; // Re-throwing exception after catching it
-        }
+    public void broadcastStationID(StationID stationID) throws ConnectException {
+        btSignal.BTbroadcast();
     }
 
     public void startDriving() throws ConnectException, ProceduralException {
-        if (currentJourney == null || !currentJourney.isServiceActive()) {
-            throw new ProceduralException("No active journey to start driving.");
-        }
-        try {
-            server.startDriving();
-        } catch (ConnectException | ProceduralException e) {
-            // Re-throwing exception
-            throw e;
-        }
+        arduinoMicroController.startDriving();
     }
 
     public void stopDriving() throws ConnectException, ProceduralException {
-        if (currentJourney == null || !currentJourney.isServiceActive()) {
-            throw new ProceduralException("No active journey to stop.");
-        }
-        try {
-            server.stopDriving();
-        } catch (ConnectException | ProceduralException e) {
-            throw e;
-        }
+        arduinoMicroController.stopDriving();
     }
 
-    // Métodos internos para cálculos relacionados con el servicio
-    private void calculateValues(GeographicPoint gP, LocalDateTime date) {
-        double distance = server.calculateDistance(gP);
-        int duration = server.calculateDuration(date);
-        double averageSpeed = server.calculateAverageSpeed(distance, duration);
-
-        if (currentJourney != null) {
-            currentJourney.setDistance(distance);
+    private void calculateValues(GeographicPoint startLocation, GeographicPoint endLocation, LocalDateTime startTime, LocalDateTime endTime)
+            throws ProceduralException {
+        if (startLocation == null || endLocation == null || startTime == null || endTime == null) {
+            throw new ProceduralException("Invalid inputs for calculating values.");
         }
-
-        System.out.println("Distance: " + distance);
-        System.out.println("Duration: " + duration);
-        System.out.println("Average Speed: " + averageSpeed);
+        // Example calculation logic
+        float distance = calculateDistance(startLocation, endLocation);
+        int duration = calculateDuration(startTime, endTime);
+        float averageSpeed = calculateAverageSpeed(distance, duration);
+        // Utilize these values where needed
     }
 
-    private void calculateImport(float dis, int dur, float avSp, LocalDateTime date) {
-        double cost = server.calculateCost(dis, dur, avSp, date);
-        if (currentJourney != null) {
-            currentJourney.setCost(cost);
-        }
-        System.out.println("Cost of the journey: " + cost);
+    private float calculateDistance(GeographicPoint start, GeographicPoint end) {
+        // Placeholder: Compute geographical distance
+        return Math.abs(start.getLatitude() - end.getLatitude()) + Math.abs(start.getLongitude() - end.getLongitude());
+    }
+
+    private int calculateDuration(LocalDateTime start, LocalDateTime end) {
+        return (int) java.time.Duration.between(start, end).toMinutes();
+    }
+
+    private float calculateAverageSpeed(float distance, int duration) {
+        return duration > 0 ? distance / duration : 0;
     }
 }
