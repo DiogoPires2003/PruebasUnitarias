@@ -5,8 +5,8 @@ import services.*;
 import services.smartfeatures.*;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
-import java.net.ConnectException;
 import java.time.LocalDateTime;
+import exceptions.*;
 
 /**
  * Handles the realization of journeys, managing events and dependencies.
@@ -52,11 +52,11 @@ public class JourneyRealizeHandler {
         btSignal.BTbroadcast();
     }
 
-    public void startDriving() throws ConnectException, ProceduralException {
+    public void startDriving() throws ConnectException, ProceduralException, PMVPhisicalException {
         arduinoMicroController.startDriving();
     }
 
-    public void stopDriving() throws ConnectException, ProceduralException {
+    public void stopDriving() throws ConnectException, ProceduralException, PMVNotAvailException, PMVPhisicalException, ConnectException {
         arduinoMicroController.stopDriving();
     }
 
