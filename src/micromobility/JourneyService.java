@@ -5,11 +5,11 @@ import data.*;
 
 public class JourneyService {
 
-    private UserAccount user;
-    private PMVehicle vehicle;
-    private GeographicPoint startLocation;
+    private final UserAccount user;
+    private final PMVehicle vehicle;
+    private final GeographicPoint startLocation;
     private GeographicPoint endLocation;
-    private LocalDateTime startTime;
+    private final LocalDateTime startTime;
     private LocalDateTime endTime;
 
     public JourneyService(UserAccount user, PMVehicle vehicle, GeographicPoint startLocation, LocalDateTime startTime) {
