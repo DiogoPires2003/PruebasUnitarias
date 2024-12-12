@@ -1,7 +1,7 @@
 package micromobility;
 
 public enum PMVState {
-    Availbale,
+    Available,
     NotAvailable,
     UnderWay,
     TemporaryParking
