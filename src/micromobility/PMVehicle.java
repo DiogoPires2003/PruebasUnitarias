@@ -1,4 +1,5 @@
 package micromobility;
+import data.GeographicPoint;
 
 public class PMVehicle {
 
@@ -35,35 +36,5 @@ public class PMVehicle {
     }
 }
 
-class GeographicPoint {
-    private double latitude;
-    private double longitude;
 
-    public GeographicPoint(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    @Override
-    public String toString() {
-        return "GeographicPoint{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
-                '}';
-    }
-}
-
-enum PMVState {
-    Availbale,
-    NotAvailable,
-    UnderWay,
-    TemporaryParking
-}

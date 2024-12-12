@@ -20,24 +20,24 @@ public class JourneyRealizeHandler {
         this.currentJourney = null; // No hay un viaje activo inicialmente
     }
 
-    public void scanQR() throws ConnectException, InvalidPairingException,
+    public void scanQR() throws ConnectException, InvalidPairingArgsException,
             CorruptedImgException, PMVNotAvailException, ProceduralException {
         try {
             String qrData = qrDecoder.decodeQR();
-            if (!server.checkVehicleAvailability(qrData)) {
+            if (!server.checkPMVAvail(qrData)) {
                 throw new PMVNotAvailException("Vehicle is not available.");
             }
             server.prepareJourney(qrData);
 
             // Crear un nuevo JourneyService para el estado del viaje
             this.currentJourney = new JourneyService(qrData, "currentUserId"); // Usar ID de usuario actual
-        } catch (ConnectException | InvalidPairingException | CorruptedImgException e) {
+        } catch (ConnectException | InvalidPairingArgsException | CorruptedImgException e) {
             // Catching specific exceptions here just to re-throw them
             throw e;
         }
     }
 
-    public void unPairVehicle() throws ConnectException, InvalidPairingException,
+    public void unPairVehicle() throws ConnectException, InvalidPairingArgsException,
             PairingNotFoundException, ProceduralException {
         if (currentJourney == null || !currentJourney.isServiceActive()) {
             throw new ProceduralException("No active journey to unpair.");
@@ -45,7 +45,7 @@ public class JourneyRealizeHandler {
         try {
             server.finishJourney();
             currentJourney.setServiceFinish();
-        } catch (ConnectException | InvalidPairingException | PairingNotFoundException e) {
+        } catch (ConnectException | InvalidPairingArgsException | PairingNotFoundException e) {
             // Pass exception up
             throw e;
         }
