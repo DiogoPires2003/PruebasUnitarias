@@ -1,13 +1,10 @@
 package micromobility;
 
-import data.GeographicPoint;
-import services.Server;
-import services.smartfeatures.QRDecoder;
-
-import java.time.LocalDateTime;
-
+import services.*;
+import services.smartfeatures.*;
+import data.*;
 import exceptions.*;
-
+import java.time.LocalDateTime;
 import java.net.ConnectException;
 
 public class JourneyRealizeHandler {
