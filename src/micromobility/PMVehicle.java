@@ -19,15 +19,13 @@ public class PMVehicle {
     public VehicleID getId() {
         return id;
     }
-
-    public PMVState getState() {
-        return state;
-    }
-
     public GeographicPoint getLocation() {
         return location;
     }
 
+    public PMVState getState() {
+        return state;
+    }
     public void setNotAvailb() {
         this.state = PMVState.NotAvailable;
     }
