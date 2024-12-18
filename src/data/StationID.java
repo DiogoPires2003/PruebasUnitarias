@@ -1,10 +1,9 @@
 package data;
 
-public final class StationId {
-
+public final class StationID {
     private final String id;
 
-    public StationId(String id) {
+    public StationID(String id) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("StationID cannot be null or empty.");
         }
@@ -22,7 +21,7 @@ public final class StationId {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StationId stationID = (StationId) o;
+        StationID stationID = (StationID) o;
         return id.equals(stationID.id);
     }
 

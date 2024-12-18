@@ -4,6 +4,7 @@ out/
 !**/src/test/**/out/
 !**/idea/misc.xml
 !**/idea/vcs.xml
+!**/idea/uiDesigner.xml
 ### Eclipse ###
 .apt_generated
 .classpath
