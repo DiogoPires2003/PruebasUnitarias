@@ -6,6 +6,9 @@ public final class GeographicPoint { // The geographical coordinates expressed a
     private final float longitude;
 
     public GeographicPoint(float lat, float lon) {
+        /*if (lat != float || ){
+
+        }*/
         this.latitude = lat;
         this.longitude = lon;
     }
@@ -37,7 +40,7 @@ public final class GeographicPoint { // The geographical coordinates expressed a
 
     @Override
     public String toString() {
-        return "GeographicPoint {" +
+        return "Geographic point {" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';
