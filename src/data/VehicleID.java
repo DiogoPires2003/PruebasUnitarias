@@ -1,15 +1,14 @@
 package data;
 
-public final class StationId {
-
+public final class VehicleID {
     private final String id;
 
-    public StationId(String id) {
+    public VehicleID(String id) {
         if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("StationID cannot be null or empty.");
+            throw new IllegalArgumentException("VehicleID cannot be null or empty.");
         }
-        if (!id.matches("[A-Z0-9]{4,10}")) {
-            throw new IllegalArgumentException("Invalid StationID format. Must be 4-10 alphanumeric characters.");
+        if (!id.matches("[A-Z]{2}[0-9]{3}")) {
+            throw new IllegalArgumentException("Invalid VehicleID format. Must be 2 letters followed by 3 digits.");
         }
         this.id = id;
     }
@@ -22,8 +21,8 @@ public final class StationId {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StationId stationID = (StationId) o;
-        return id.equals(stationID.id);
+        VehicleID vehicleID = (VehicleID) o;
+        return id.equals(vehicleID.id);
     }
 
     @Override
@@ -33,6 +32,6 @@ public final class StationId {
 
     @Override
     public String toString() {
-        return "StationID{" + "id='" + id + '\'' + '}';
+        return "VehicleID{" + "id='" + id + '\'' + '}';
     }
 }
