@@ -1,6 +1,6 @@
 package data;
 
-public class UserAccount {
+public final class UserAccount {
     private final String username;
 
     public UserAccount(String username) {
