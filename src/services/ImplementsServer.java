@@ -26,7 +26,6 @@ public class ImplementsServer implements Server {
 
     @Override
     public void registerPairing(UserAccount user, VehicleID veh, StationID st, GeographicPoint loc, LocalDateTime date) throws InvalidPairingArgsException, ConnectException {
-        // TODO: Implement logic to register a pairing
         if (user == null || veh == null || st == null || loc == null || date == null) {
             throw new InvalidPairingArgsException("Invalid arguments for registering pairing");
         }
