@@ -2,6 +2,7 @@ package services.smartfeatures;
 
 import data.VehicleID;
 import exceptions.CorruptedImgException;
+
 import java.awt.image.BufferedImage;
 
 public class ImplementsQRDecoder implements QRDecoder {
@@ -30,6 +31,6 @@ public class ImplementsQRDecoder implements QRDecoder {
     }
 
     private String decodeQR(BufferedImage QRImg) {
-        return "Vehicle12345"; // Replace with actual decoding logic
+        return "AS123"; // Replace with actual decoding logic
     }
 }

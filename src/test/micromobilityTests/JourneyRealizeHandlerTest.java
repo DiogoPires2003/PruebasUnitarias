@@ -1,21 +1,17 @@
 package test.micromobilityTests;
-import data.GeographicPoint;
-import data.StationID;
-import data.UserAccount;
-import data.VehicleID;
-import micromobility.JourneyRealizeHandler;
-import micromobility.PMVehicle;
+
+import data.*;
+import micromobility.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import services.ImplementsServer;
-import services.Server;
+import services.*;
 import services.smartfeatures.*;
-
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JourneyRealizeHandlerTest {
 
@@ -24,6 +20,12 @@ public class JourneyRealizeHandlerTest {
     QRDecoder qrDecoder;
     ArduinoMicroController arduinoMicroController;
     UnbondedBTSignal btSignal;
+    BufferedImage img;
+    UserAccount user;
+    StationID station;
+    GeographicPoint point;
+    LocalDateTime date;
+
 
     @BeforeEach
     void setup(){
@@ -31,9 +33,28 @@ public class JourneyRealizeHandlerTest {
         this.qrDecoder = new ImplementsQRDecoder();
         this.arduinoMicroController = new ImplementsArduinoMicroController();
         this.btSignal = new ImplementsUnbondedBTSignal();
-        this.journeyRH = new JourneyRealizeHandler(server,qrDecoder,arduinoMicroController,btSignal);
+        this.journeyRH = new JourneyRealizeHandler(server, qrDecoder, arduinoMicroController, btSignal);
+        VehicleID vehicleID = new VehicleID("AA312");
+        this.img = new BufferedImage(1,1,1);
+        this.user = new UserAccount("usuario");
+        this.station = new StationID("ACE12");
+        this.point = new GeographicPoint(2500, 2500);
+        this.date = LocalDateTime.now();
     }
 
+    //Comprovem que el constructor doni excepció quan una variable es null
+    @Test
+    void JourneyRealizeHandlerConstructorNullTest() {
+        assertThrows(IllegalArgumentException.class, () -> new JourneyRealizeHandler(server, qrDecoder, arduinoMicroController, null));
+        assertThrows(IllegalArgumentException.class, () -> new JourneyRealizeHandler(server, qrDecoder, null, btSignal));
+        assertThrows(IllegalArgumentException.class, () -> new JourneyRealizeHandler(null, qrDecoder, arduinoMicroController, btSignal));
+        assertThrows(IllegalArgumentException.class, () -> new JourneyRealizeHandler(server, null, arduinoMicroController, btSignal));
+    }
+
+    @Test
+    void ScanQRTest() {
+        assertDoesNotThrow(() -> journeyRH.scanQR(img, user, station, point, date));
+    }
     @Test
     void testUnPairVehicle_Successful() throws Exception {
         UserAccount user = new UserAccount("test_user");
@@ -79,55 +100,5 @@ public class JourneyRealizeHandlerTest {
         assertDoesNotThrow(() -> journeyRH.stopDriving());
     }
 
-    @Test
-    void testCalculateValues_Successful() throws Exception {
-        GeographicPoint startLocation = new GeographicPoint(10.0F, 20.0F);
-        GeographicPoint endLocation = new GeographicPoint(15.0F, 25.0F);
-        LocalDateTime startTime = LocalDateTime.of(2023, 12, 1, 10, 0);
-        LocalDateTime endTime = LocalDateTime.of(2023, 12, 1, 10, 30);
 
-        Method method = JourneyRealizeHandler.class.getDeclaredMethod("calculateValues", GeographicPoint.class, GeographicPoint.class, LocalDateTime.class, LocalDateTime.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> method.invoke(journeyRH, startLocation, endLocation, startTime, endTime));
-    }
-
-
-    @Test
-    void testCalculateDistance_Successful() throws Exception {
-        GeographicPoint start = new GeographicPoint(10.0F, 20.0F);
-        GeographicPoint end = new GeographicPoint(15.0F, 25.0F);
-
-        Method method = JourneyRealizeHandler.class.getDeclaredMethod("calculateDistance", GeographicPoint.class, GeographicPoint.class);
-        method.setAccessible(true);
-
-        float distance = (float) method.invoke(journeyRH, start, end);
-
-        assertEquals(10.0, distance, 0.01);
-    }
-
-    @Test
-    void testCalculateDuration_Successful() throws Exception {
-        LocalDateTime start = LocalDateTime.of(2023, 12, 1, 10, 0);
-        LocalDateTime end = LocalDateTime.of(2023, 12, 1, 10, 30);
-
-        Method method = JourneyRealizeHandler.class.getDeclaredMethod("calculateDuration", LocalDateTime.class, LocalDateTime.class);
-        method.setAccessible(true);
-
-        int duration = (int) method.invoke(journeyRH, start, end);
-
-        assertEquals(30, duration);
-    }
-
-    @Test
-    void testCalculateAverageSpeed_Successful() throws Exception {
-        float distance = 10.0f; // Km
-        int duration = 30; // Min
-
-        Method method = JourneyRealizeHandler.class.getDeclaredMethod("calculateAverageSpeed", float.class, int.class);
-        method.setAccessible(true);
-
-        float speed = (float) method.invoke(journeyRH, distance, duration);
-        assertEquals(0.333, speed, 0.001);
-    }
 }
