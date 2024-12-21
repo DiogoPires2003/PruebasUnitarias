@@ -58,6 +58,14 @@ public class JourneyRealizeHandlerTest {
     void ScanQRTest() {
         assertDoesNotThrow(() -> journeyRH.scanQR(img, user, station, point, date));
     }
+    //TODO tira la excepció equivocada
+
+    @Test
+    void ScanQRUnseccessfulTest() {
+        assertThrows(InvalidPairingArgsException.class,() -> {
+            journeyRH.scanQR(img, user, station, null, date);
+        });
+    }
     @Test
     void testUnPairVehicle_Successful(){
         float averageSpeed = 20.0f;
