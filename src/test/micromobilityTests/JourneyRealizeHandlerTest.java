@@ -1,6 +1,7 @@
 package test.micromobilityTests;
 
 import data.*;
+import exceptions.InvalidPairingArgsException;
 import micromobility.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ public class JourneyRealizeHandlerTest {
     StationID station;
     GeographicPoint point;
     LocalDateTime date;
+    VehicleID vehicleId;
+    PMVehicle vehicle;
 
 
     @BeforeEach
@@ -34,15 +37,15 @@ public class JourneyRealizeHandlerTest {
         this.arduinoMicroController = new ImplementsArduinoMicroController();
         this.btSignal = new ImplementsUnbondedBTSignal();
         this.journeyRH = new JourneyRealizeHandler(server, qrDecoder, arduinoMicroController, btSignal);
-        VehicleID vehicleID = new VehicleID("AA312");
+        this.vehicleId = new VehicleID("AA312");
         this.img = new BufferedImage(1,1,1);
         this.user = new UserAccount("usuario");
         this.station = new StationID("ACE12");
         this.point = new GeographicPoint(2500, 2500);
         this.date = LocalDateTime.now();
+        this.vehicle=new PMVehicle(vehicleId,point);
     }
 
-    //Comprovem que el constructor doni excepció quan una variable es null
     @Test
     void JourneyRealizeHandlerConstructorNullTest() {
         assertThrows(IllegalArgumentException.class, () -> new JourneyRealizeHandler(server, qrDecoder, arduinoMicroController, null));
@@ -56,49 +59,39 @@ public class JourneyRealizeHandlerTest {
         assertDoesNotThrow(() -> journeyRH.scanQR(img, user, station, point, date));
     }
     @Test
-    void testUnPairVehicle_Successful() throws Exception {
-        UserAccount user = new UserAccount("test_user");
-        PMVehicle vehicle = new PMVehicle(new VehicleID("vehicle_123"), new GeographicPoint(10.0F, 20.0F));
-        StationID stationID = new StationID("station_123");
-        GeographicPoint location = new GeographicPoint(15.0F, 25.0F);
-        LocalDateTime date = LocalDateTime.now();
+    void testUnPairVehicle_Successful(){
         float averageSpeed = 20.0f;
         float distance = 5.0f;
         int duration = 10;
         BigDecimal amount = BigDecimal.valueOf(100.0);
 
-        assertDoesNotThrow(() -> journeyRH.unPairVehicle(user, vehicle, stationID, location, date, averageSpeed, distance, duration, amount));
+        assertDoesNotThrow(() -> journeyRH.unPairVehicle(user, vehicle, station, point, date, averageSpeed, distance, duration, amount));
     }
 
     @Test
     void testUnPairVehicle_NullVehicle_ShouldThrowException() {
-        UserAccount user = new UserAccount("test_user");
-        StationID stationID = new StationID("station_123");
-        GeographicPoint location = new GeographicPoint(15.0F, 25.0F);
-        LocalDateTime date = LocalDateTime.now();
         float averageSpeed = 20.0f;
         float distance = 5.0f;
         int duration = 10;
         BigDecimal amount = BigDecimal.valueOf(100.0);
-
-        assertThrows(IllegalArgumentException.class, () -> journeyRH.unPairVehicle(user, null, stationID, location, date, averageSpeed, distance, duration, amount));
+        assertThrows(InvalidPairingArgsException.class, () -> journeyRH.unPairVehicle(user,null, station, point, date, averageSpeed, distance, duration, amount));
     }
 
+    //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
     void testBroadcastStationID_Successful() {
-        StationID stationID = new StationID("station_123");
-        assertDoesNotThrow(() -> journeyRH.broadcastStationID(stationID));
+        assertDoesNotThrow(() -> journeyRH.broadcastStationID(station));
     }
-
+    //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
     void testStartDriving_Successful() {
         assertDoesNotThrow(() -> journeyRH.startDriving());
     }
 
+    //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
     void testStopDriving_Successful() {
         assertDoesNotThrow(() -> journeyRH.stopDriving());
     }
-
 
 }

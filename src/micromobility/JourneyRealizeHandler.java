@@ -43,6 +43,9 @@ public class JourneyRealizeHandler {
 
     public void unPairVehicle(UserAccount user, PMVehicle vehicle, StationID stationID, GeographicPoint location, LocalDateTime date, float averageSpeed, float distance, int duration, BigDecimal amount)
             throws ConnectException, InvalidPairingArgsException, PairingNotFoundException, ProceduralException {
+        if (user == null || vehicle == null || stationID == null || location == null || date == null || amount == null) {
+            throw new InvalidPairingArgsException("Dependencies cannot be null.");
+        }
         server.stopPairing(user, vehicle.getId(), stationID, location, date, averageSpeed, distance, duration, amount);
         vehicle.setAvailb();
         vehicle.setLocation(location);
@@ -65,15 +68,12 @@ public class JourneyRealizeHandler {
         if (startLocation == null || endLocation == null || startTime == null || endTime == null) {
             throw new ProceduralException("Invalid inputs for calculating values.");
         }
-        // Example calculation logic
         float distance = calculateDistance(startLocation, endLocation);
         int duration = calculateDuration(startTime, endTime);
         float averageSpeed = calculateAverageSpeed(distance, duration);
-        // Utilize these values where needed
     }
 
     private float calculateDistance(GeographicPoint start, GeographicPoint end) {
-        // Placeholder: Compute geographical distance
         return Math.abs(start.getLatitude() - end.getLatitude()) + Math.abs(start.getLongitude() - end.getLongitude());
     }
 
