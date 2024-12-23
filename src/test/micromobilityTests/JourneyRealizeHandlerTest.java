@@ -72,7 +72,6 @@ public class JourneyRealizeHandlerTest {
         float distance = 5.0f;
         int duration = 10;
         BigDecimal amount = BigDecimal.valueOf(100.0);
-
         assertDoesNotThrow(() -> journeyRH.unPairVehicle(user, vehicle, station, point, date, averageSpeed, distance, duration, amount));
     }
 
