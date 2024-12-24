@@ -1,12 +1,13 @@
 package test.micromobilityTests;
 
 import data.*;
-import exceptions.InvalidPairingArgsException;
+import exceptions.*;
 import micromobility.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import services.*;
 import services.smartfeatures.*;
+
 import java.math.BigDecimal;
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
@@ -31,19 +32,19 @@ public class JourneyRealizeHandlerTest {
 
 
     @BeforeEach
-    void setup(){
+    void setup() {
         this.server = new ImplementsServer();
         this.qrDecoder = new ImplementsQRDecoder();
         this.arduinoMicroController = new ImplementsArduinoMicroController();
         this.btSignal = new ImplementsUnbondedBTSignal();
         this.journeyRH = new JourneyRealizeHandler(server, qrDecoder, arduinoMicroController, btSignal);
         this.vehicleId = new VehicleID("AA312");
-        this.img = new BufferedImage(1,1,1);
+        this.img = new BufferedImage(1, 1, 1);
         this.user = new UserAccount("usuario");
         this.station = new StationID("ACE12");
         this.point = new GeographicPoint(2500, 2500);
         this.date = LocalDateTime.now();
-        this.vehicle=new PMVehicle(vehicleId,point);
+        this.vehicle = new PMVehicle(vehicleId, point);
     }
 
     @Test
@@ -62,12 +63,26 @@ public class JourneyRealizeHandlerTest {
 
     @Test
     void ScanQRUnseccessfulTest() {
-        assertThrows(InvalidPairingArgsException.class,() -> {
+        assertThrows(InvalidPairingArgsException.class, () -> {
+            journeyRH.scanQR(img, user, station, point, null);
+        });
+        assertThrows(InvalidPairingArgsException.class, () -> {
             journeyRH.scanQR(img, user, station, null, date);
         });
+        assertThrows(InvalidPairingArgsException.class, () -> {
+            journeyRH.scanQR(img, user, null, point, date);
+        });
+        assertThrows(InvalidPairingArgsException.class, () -> {
+            journeyRH.scanQR(img, null, station, point, date);
+        });
+        assertThrows(InvalidPairingArgsException.class, () -> {
+            journeyRH.scanQR(null, user, station, point, date);
+        });
     }
+//Els throws estan perquè abans de fer el unpari, haurem de fer el pair, i per si falla han d'estar posats.
     @Test
-    void testUnPairVehicle_Successful(){
+    void testUnPairVehicle_Successful() throws CorruptedImgException, InvalidPairingArgsException, ProceduralException, PMVNotAvailException, ConnectException {
+        journeyRH.scanQR(img,user,station,point,date);
         float averageSpeed = 20.0f;
         float distance = 5.0f;
         int duration = 10;
@@ -76,12 +91,13 @@ public class JourneyRealizeHandlerTest {
     }
 
     @Test
-    void testUnPairVehicle_NullVehicle_ShouldThrowException() {
+    void testUnPairVehicle_NullVehicle_ShouldThrowException() throws CorruptedImgException, InvalidPairingArgsException, ProceduralException, PMVNotAvailException, ConnectException {
+        journeyRH.scanQR(img,user,station,point,date);
         float averageSpeed = 20.0f;
         float distance = 5.0f;
         int duration = 10;
         BigDecimal amount = BigDecimal.valueOf(100.0);
-        assertThrows(InvalidPairingArgsException.class, () -> journeyRH.unPairVehicle(user,null, station, point, date, averageSpeed, distance, duration, amount));
+        assertThrows(InvalidPairingArgsException.class, () -> journeyRH.unPairVehicle(user, null, station, point, date, averageSpeed, distance, duration, amount));
     }
 
     //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
@@ -89,6 +105,7 @@ public class JourneyRealizeHandlerTest {
     void testBroadcastStationID_Successful() {
         assertDoesNotThrow(() -> journeyRH.broadcastStationID(station));
     }
+
     //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
     void testStartDriving_Successful() {
