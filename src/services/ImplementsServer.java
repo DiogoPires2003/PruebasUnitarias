@@ -24,7 +24,9 @@ public class ImplementsServer implements Server {
         if (user == null || veh == null || st == null || loc == null || date == null) {
             throw new InvalidPairingArgsException("Invalid arguments for registering pairing");
         }
+        setPairing(user,veh,st,loc,date);
         System.out.println("Registering pairing: User=" + user + ", Vehicle=" + veh + ", Station=" + st + ", Location=" + loc + ", Date=" + date);
+        registerLocation(veh,st);
     }
 
     @Override

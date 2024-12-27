@@ -1,12 +1,12 @@
 package micromobility;
 
 import data.*;
+import exceptions.*;
 import services.*;
 import services.smartfeatures.*;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import exceptions.*;
 
 /**
  * Handles the realization of journeys, managing events and dependencies.
@@ -17,6 +17,7 @@ public class JourneyRealizeHandler {
     private QRDecoder qrDecoder;
     private ArduinoMicroController arduinoMicroController;
     private UnbondedBTSignal btSignal;
+    private JourneyService s;
 
     public JourneyRealizeHandler(Server server, QRDecoder qrDecoder, ArduinoMicroController arduinoMicroController, UnbondedBTSignal btSignal) {
         if (server == null || qrDecoder == null || arduinoMicroController == null || btSignal == null) {
@@ -30,20 +31,27 @@ public class JourneyRealizeHandler {
 
     public void scanQR(BufferedImage qrImage, UserAccount user, StationID stationID, GeographicPoint location, LocalDateTime date)
             throws ConnectException, InvalidPairingArgsException, CorruptedImgException, PMVNotAvailException, ProceduralException {
+        if (qrImage == null || user == null || stationID == null || location == null || date == null) {
+            throw new InvalidPairingArgsException("Dependencies cannot be null.");
+        }
         VehicleID vehicleID = qrDecoder.getVehicleID(qrImage);
         server.checkPMVAvail(vehicleID);
 
         PMVehicle vehicle = new PMVehicle(vehicleID, location);
-        JourneyService journeyService = new JourneyService(user, vehicle, location, date);
+        this.s = new JourneyService(user, vehicle, location, date);
 
         server.registerPairing(user, vehicleID, stationID, location, date);
         vehicle.setNotAvailb();
-        journeyService.setServiceInit();
+        s.setServiceInit();
     }
 
     public void unPairVehicle(UserAccount user, PMVehicle vehicle, StationID stationID, GeographicPoint location, LocalDateTime date, float averageSpeed, float distance, int duration, BigDecimal amount)
             throws ConnectException, InvalidPairingArgsException, PairingNotFoundException, ProceduralException {
+        if (user == null || vehicle == null || stationID == null || location == null || date == null || amount == null) {
+            throw new InvalidPairingArgsException("Dependencies cannot be null.");
+        }
         server.stopPairing(user, vehicle.getId(), stationID, location, date, averageSpeed, distance, duration, amount);
+        server.unPairRegisterService(s);
         vehicle.setAvailb();
         vehicle.setLocation(location);
     }
@@ -65,15 +73,12 @@ public class JourneyRealizeHandler {
         if (startLocation == null || endLocation == null || startTime == null || endTime == null) {
             throw new ProceduralException("Invalid inputs for calculating values.");
         }
-        // Example calculation logic
         float distance = calculateDistance(startLocation, endLocation);
         int duration = calculateDuration(startTime, endTime);
         float averageSpeed = calculateAverageSpeed(distance, duration);
-        // Utilize these values where needed
     }
 
     private float calculateDistance(GeographicPoint start, GeographicPoint end) {
-        // Placeholder: Compute geographical distance
         return Math.abs(start.getLatitude() - end.getLatitude()) + Math.abs(start.getLongitude() - end.getLongitude());
     }
 
