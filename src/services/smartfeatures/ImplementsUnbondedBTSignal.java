@@ -16,6 +16,7 @@ public class ImplementsUnbondedBTSignal implements UnbondedBTSignal {
 
     @Override
     public void BTbroadcast() throws ConnectException {
+        startBroadcasting();
         if (!isBroadcasting) {
             throw new ConnectException("Bluetooth connection is not established.");
         }
@@ -27,6 +28,7 @@ public class ImplementsUnbondedBTSignal implements UnbondedBTSignal {
                     Thread.sleep(5000); // Simula un intervalo de 5 segundos entre emisiones
                 }
             } catch (InterruptedException e) {
+                stopBroadcasting();
                 System.err.println("Broadcasting interrupted: " + e.getMessage());
             }
         }).start();
