@@ -59,8 +59,6 @@ public class JourneyRealizeHandlerTest {
     void ScanQRTest() {
         assertDoesNotThrow(() -> journeyRH.scanQR(img, user, station, point, date));
     }
-    //TODO tira la excepció equivocada
-
     @Test
     void ScanQRUnseccessfulTest() {
         assertThrows(InvalidPairingArgsException.class, () -> {
@@ -79,7 +77,6 @@ public class JourneyRealizeHandlerTest {
             journeyRH.scanQR(null, user, station, point, date);
         });
     }
-//Els throws estan perquè abans de fer el unpari, haurem de fer el pair, i per si falla han d'estar posats.
     @Test
     void testUnPairVehicle_Successful() throws CorruptedImgException, InvalidPairingArgsException, ProceduralException, PMVNotAvailException, ConnectException {
         journeyRH.scanQR(img,user,station,point,date);
