@@ -97,21 +97,21 @@ public class JourneyRealizeHandlerTest {
         assertThrows(InvalidPairingArgsException.class, () -> journeyRH.unPairVehicle(user, null, station, point, date, averageSpeed, distance, duration, amount));
     }
 
-    //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
     void testBroadcastStationID_Successful() {
         assertDoesNotThrow(() -> journeyRH.broadcastStationID(station));
     }
 
-    //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
-    void testStartDriving_Successful() {
+    void testStartDriving_Successful() throws CorruptedImgException, InvalidPairingArgsException, ProceduralException, PMVNotAvailException, ConnectException {
+        arduinoMicroController.setBTconnection();
         assertDoesNotThrow(() -> journeyRH.startDriving());
     }
 
-    //TODO:PER ALGUNA RAÓ TIRA CONNECTION EXCEPTION
     @Test
-    void testStopDriving_Successful() {
+    void testStopDriving_Successful() throws ConnectException, ProceduralException, PMVPhisicalException {
+        arduinoMicroController.setBTconnection();
+        journeyRH.startDriving();
         assertDoesNotThrow(() -> journeyRH.stopDriving());
     }
 
