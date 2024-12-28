@@ -25,4 +25,6 @@ public interface Server {
     void unPairRegisterService(JourneyService s) throws PairingNotFoundException;
 
     void registerLocation(VehicleID veh, StationID st);
+
+    void registerPayment(ServiceID servID, UserAccount user, BigDecimal imp, char payMeth)throws ConnectException;
 }

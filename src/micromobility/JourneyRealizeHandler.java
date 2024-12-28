@@ -89,4 +89,13 @@ public class JourneyRealizeHandler {
     private float calculateAverageSpeed(float distance, int duration) {
         return duration > 0 ? distance / duration : 0;
     }
+
+    //TODO PAYMENT
+    public void selectPayment(char opt){
+
+    }
+    //TODO PAYMENT
+    public void realizePayment(BigDecimal imp){
+
+    }
 }
