@@ -18,6 +18,7 @@ public class JourneyRealizeHandler {
     private ArduinoMicroController arduinoMicroController;
     private UnbondedBTSignal btSignal;
     private JourneyService s;
+    private ServiceID serviceID;
 
     public JourneyRealizeHandler(Server server, QRDecoder qrDecoder, ArduinoMicroController arduinoMicroController, UnbondedBTSignal btSignal) {
         if (server == null || qrDecoder == null || arduinoMicroController == null || btSignal == null) {
@@ -90,12 +91,27 @@ public class JourneyRealizeHandler {
         return duration > 0 ? distance / duration : 0;
     }
 
-    //TODO PAYMENT
-    public void selectPayment(char opt){
+    private BigDecimal calculateImport(float distance,int dur, float avSp,LocalDateTime date){
+        if(distance == 0 || dur == 0 || avSp == 0 || date == null){
+            throw new IllegalArgumentException("Invalid arguments for calculating import");
+        }
+        return new BigDecimal(distance * dur * avSp);
+    }
 
+    //TODO PAYMENT
+    public void selectPayment(char opt)throws ProceduralException,ConnectException,NotEnoughWalletException{
+        if(opt == 'W'||opt == 'B'||opt == 'P'||opt == 'C'){
+            realizePayment(s.);
+        }else{
+            throw new ProceduralException("Invalid payment method");
+        }
     }
     //TODO PAYMENT
-    public void realizePayment(BigDecimal imp){
+    public void realizePayment(BigDecimal imp) throws NotEnoughWalletException, ConnectException {
+        if(imp == null){
+            throw new IllegalArgumentException("Invalid arguments for realizing payment");
+        }
 
+        server.registerPayment(serviceID, s.getUser(), imp, 'W');
     }
 }
