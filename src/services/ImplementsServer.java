@@ -55,9 +55,11 @@ public class ImplementsServer implements Server {
         }
         System.out.println("Registering location: Vehicle=" + veh + ", Station=" + st);
     }
-    //TODO PAYMENT
     @Override
     public void registerPayment(ServiceID servID, UserAccount user, BigDecimal imp, char payMeth)throws ConnectException{
-
+        if (servID == null || user == null || imp == null) {
+            throw new IllegalArgumentException("Invalid arguments for registering payment");
+        }
+        System.out.println("Registering payment: ServiceID=" + servID + ", User=" + user + ", Impact=" + imp + ", Payment Method=" + payMeth);
     }
 }
