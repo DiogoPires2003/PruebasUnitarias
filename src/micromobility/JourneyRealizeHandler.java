@@ -8,9 +8,7 @@ import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Handles the realization of journeys, managing events and dependencies.
- */
+
 public class JourneyRealizeHandler {
 
     private Server server;

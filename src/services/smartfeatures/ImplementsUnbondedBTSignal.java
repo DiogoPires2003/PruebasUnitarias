@@ -25,7 +25,7 @@ public class ImplementsUnbondedBTSignal implements UnbondedBTSignal {
             try {
                 while (isBroadcasting) {
                     broadcastStationID();
-                    Thread.sleep(5000); // Simula un intervalo de 5 segundos entre emisiones
+                    Thread.sleep(5000);
                 }
             } catch (InterruptedException e) {
                 stopBroadcasting();
@@ -45,7 +45,6 @@ public class ImplementsUnbondedBTSignal implements UnbondedBTSignal {
     }
 
     private void broadcastStationID() {
-        // Simula el envío del identificador de la estación
         System.out.println("Broadcasting station ID: ST-1234");
     }
 }

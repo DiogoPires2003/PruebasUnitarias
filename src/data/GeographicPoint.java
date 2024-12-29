@@ -1,14 +1,11 @@
 package data;
 
 
-public final class GeographicPoint { // The geographical coordinates expressed as decimal degrees
+public final class GeographicPoint {
     private final float latitude;
     private final float longitude;
 
     public GeographicPoint(float lat, float lon) {
-        /*if (lat != float || ){
-
-        }*/
         this.latitude = lat;
         this.longitude = lon;
     }
