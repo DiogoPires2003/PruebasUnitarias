@@ -97,15 +97,16 @@ public class JourneyRealizeHandler {
         }
         return new BigDecimal(distance * dur * avSp);
     }
-
-    //TODO PAYMENT
-    public void selectPayment(char opt)throws ProceduralException,ConnectException,NotEnoughWalletException{
-        if(opt == 'W'){
-            realizePayment(calculateImport(0,0,0,null));
+    //TODO: lligar logica amb altres classes
+    public char selectPayment(char opt)throws ProceduralException,ConnectException,NotEnoughWalletException{
+        if(opt == 'W'||opt == 'B'||opt == 'P'||opt == 'C'){
+            return opt;
+        }else{
+            throw new ProceduralException("Invalid payment method");
         }
-
     }
 
+    //TODO: lligar logica amb altres classes
     public void realizePayment(BigDecimal imp) throws NotEnoughWalletException, ConnectException {
         if (imp == null) {
             throw new IllegalArgumentException("Impact cannot be null.");
