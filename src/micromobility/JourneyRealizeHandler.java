@@ -4,6 +4,7 @@ import data.*;
 import exceptions.*;
 import services.*;
 import services.smartfeatures.*;
+
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +17,9 @@ public class JourneyRealizeHandler {
     private ArduinoMicroController arduinoMicroController;
     private UnbondedBTSignal btSignal;
     private JourneyService s;
+    private ServiceID serviceID;
+    private char meth;
+    private BigDecimal amount;
 
     public JourneyRealizeHandler(Server server, QRDecoder qrDecoder, ArduinoMicroController arduinoMicroController, UnbondedBTSignal btSignal) {
         if (server == null || qrDecoder == null || arduinoMicroController == null || btSignal == null) {
@@ -25,6 +29,7 @@ public class JourneyRealizeHandler {
         this.qrDecoder = qrDecoder;
         this.arduinoMicroController = arduinoMicroController;
         this.btSignal = btSignal;
+        this.serviceID = new ServiceID("SERVICE");
     }
 
     public void scanQR(BufferedImage qrImage, UserAccount user, StationID stationID, GeographicPoint location, LocalDateTime date)
@@ -66,7 +71,7 @@ public class JourneyRealizeHandler {
         arduinoMicroController.stopDriving();
     }
 
-    private void calculateValues(GeographicPoint startLocation, GeographicPoint endLocation, LocalDateTime startTime, LocalDateTime endTime)
+    private BigDecimal calculateValues(GeographicPoint startLocation, GeographicPoint endLocation, LocalDateTime startTime, LocalDateTime endTime)
             throws ProceduralException {
         if (startLocation == null || endLocation == null || startTime == null || endTime == null) {
             throw new ProceduralException("Invalid inputs for calculating values.");
@@ -74,6 +79,7 @@ public class JourneyRealizeHandler {
         float distance = calculateDistance(startLocation, endLocation);
         int duration = calculateDuration(startTime, endTime);
         float averageSpeed = calculateAverageSpeed(distance, duration);
+        return calculateImport(distance, duration,averageSpeed,endTime);
     }
 
     private float calculateDistance(GeographicPoint start, GeographicPoint end) {
@@ -87,4 +93,34 @@ public class JourneyRealizeHandler {
     private float calculateAverageSpeed(float distance, int duration) {
         return duration > 0 ? distance / duration : 0;
     }
+
+    private BigDecimal calculateImport(float distance, int dur, float avSp, LocalDateTime date) {
+        if (distance == 0 || dur == 0 || avSp == 0 || date == null) {
+            throw new IllegalArgumentException("Invalid arguments for calculating import");
+        }
+        this.amount = new BigDecimal(distance * dur * avSp);
+        return amount;
+    }
+
+    //TODO: lligar logica amb altres classes
+    public void selectPayment(char opt) throws ProceduralException, ConnectException, NotEnoughWalletException {
+        if (opt == 'W' || opt == 'B' || opt == 'P' || opt == 'C') {
+            this.meth = opt;
+        } else {
+            throw new ProceduralException("Invalid payment method");
+        }
+    }
+
+    //TODO: lligar logica amb altres classes
+    public void realizePayment(BigDecimal imp) throws NotEnoughWalletException, ConnectException {
+        if (imp == null) {
+            throw new IllegalArgumentException("Import cannot be null.");
+        }
+        server.registerPayment(serviceID, s.getUser(), imp, this.meth);
+    }
+
+    public void incrementWalletUser(float value){
+        s.getUser().getWallet().addBalance(value);
+    }
+
 }
