@@ -1,5 +1,7 @@
 package data;
 
+import micromobility.payment.Wallet;
+
 public final class UserAccount {
     private final String username;
 
@@ -33,5 +35,9 @@ public final class UserAccount {
     @Override
     public String toString() {
         return "UserAccount{" + "username='" + username + '\'' + '}';
+    }
+
+    public Wallet getWallet() {
+        return new Wallet(0);
     }
 }

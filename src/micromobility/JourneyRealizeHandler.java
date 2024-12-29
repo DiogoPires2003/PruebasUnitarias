@@ -100,18 +100,16 @@ public class JourneyRealizeHandler {
 
     //TODO PAYMENT
     public void selectPayment(char opt)throws ProceduralException,ConnectException,NotEnoughWalletException{
-        if(opt == 'W'||opt == 'B'||opt == 'P'||opt == 'C'){
-            realizePayment(s.);
-        }else{
-            throw new ProceduralException("Invalid payment method");
-        }
-    }
-    //TODO PAYMENT
-    public void realizePayment(BigDecimal imp) throws NotEnoughWalletException, ConnectException {
-        if(imp == null){
-            throw new IllegalArgumentException("Invalid arguments for realizing payment");
+        if(opt == 'W'){
+            realizePayment(calculateImport(0,0,0,null));
         }
 
+    }
+
+    public void realizePayment(BigDecimal imp) throws NotEnoughWalletException, ConnectException {
+        if (imp == null) {
+            throw new IllegalArgumentException("Impact cannot be null.");
+        }
         server.registerPayment(serviceID, s.getUser(), imp, 'W');
     }
 }
