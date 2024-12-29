@@ -4,6 +4,7 @@ import micromobility.payment.Wallet;
 
 public final class UserAccount {
     private final String username;
+    private Wallet wallet;
 
     public UserAccount(String username) {
         if (username == null || username.trim().isEmpty()) {
@@ -13,6 +14,7 @@ public final class UserAccount {
             throw new IllegalArgumentException("Invalid UserAccount format. Must be 5-20 characters long and can include letters, numbers, underscores, and dots.");
         }
         this.username = username;
+        this.wallet = new Wallet(0);
     }
 
     public String getUsername() {
@@ -38,6 +40,6 @@ public final class UserAccount {
     }
 
     public Wallet getWallet() {
-        return new Wallet(0);
+        return this.wallet;
     }
 }

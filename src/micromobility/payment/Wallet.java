@@ -2,6 +2,9 @@ package micromobility.payment;
 public class Wallet {
     private float balance;
     public Wallet(float balance){
+        if (balance < 0){
+            throw new IllegalArgumentException("Balance can't be negative.");
+        }
         this.balance = balance;
     }
     public float getBalance(){

@@ -1,9 +1,11 @@
 package micromobility.payment;
-import data.*;
-import exceptions.*;
-import services.*;
-import services.smartfeatures.*;
-import micromobility.*;
+
+import data.ServiceID;
+import data.UserAccount;
+import exceptions.ConnectException;
+import exceptions.InvalidPairingArgsException;
+import micromobility.JourneyRealizeHandler;
+import services.Server;
 
 import java.math.BigDecimal;
 
@@ -26,7 +28,6 @@ public class Payment {
         if (serviceID == null || user == null || amount == null) {
             throw new InvalidPairingArgsException("Dependencies cannot be null.");
         }
-        server.registerPayment(serviceID, user, amount, paymentMethod);
         walletPayment.payService(serviceID, user, amount, paymentMethod);
     }
 }
