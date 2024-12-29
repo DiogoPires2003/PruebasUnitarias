@@ -20,7 +20,7 @@ public class PaymentTests {
     char method;
 
     @BeforeEach
-    public void setuo(){
+    public void setup(){
         this.server = new ImplementsServer();
         this.walletPayment = new WalletPayment(server);
         this.payment = new Payment(server,walletPayment);
