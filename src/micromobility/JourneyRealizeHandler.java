@@ -21,6 +21,7 @@ public class JourneyRealizeHandler {
     private JourneyService s;
     private ServiceID serviceID;
     private char meth;
+    private BigDecimal amount;
 
     public JourneyRealizeHandler(Server server, QRDecoder qrDecoder, ArduinoMicroController arduinoMicroController, UnbondedBTSignal btSignal) {
         if (server == null || qrDecoder == null || arduinoMicroController == null || btSignal == null) {
@@ -30,6 +31,7 @@ public class JourneyRealizeHandler {
         this.qrDecoder = qrDecoder;
         this.arduinoMicroController = arduinoMicroController;
         this.btSignal = btSignal;
+        this.serviceID = new ServiceID("SERVICE");
     }
 
     public void scanQR(BufferedImage qrImage, UserAccount user, StationID stationID, GeographicPoint location, LocalDateTime date)
@@ -98,7 +100,8 @@ public class JourneyRealizeHandler {
         if (distance == 0 || dur == 0 || avSp == 0 || date == null) {
             throw new IllegalArgumentException("Invalid arguments for calculating import");
         }
-        return new BigDecimal(distance * dur * avSp);
+        this.amount = new BigDecimal(distance * dur * avSp);
+        return amount;
     }
 
     //TODO: lligar logica amb altres classes
@@ -117,4 +120,9 @@ public class JourneyRealizeHandler {
         }
         server.registerPayment(serviceID, s.getUser(), imp, this.meth);
     }
+
+    public void incrementWalletUser(float value){
+        s.getUser().getWallet().addBalance(value);
+    }
+
 }

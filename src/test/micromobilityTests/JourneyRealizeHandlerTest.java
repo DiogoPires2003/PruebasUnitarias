@@ -12,8 +12,7 @@ import java.math.BigDecimal;
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JourneyRealizeHandlerTest {
 
@@ -29,6 +28,7 @@ public class JourneyRealizeHandlerTest {
     LocalDateTime date;
     VehicleID vehicleId;
     PMVehicle vehicle;
+    BigDecimal amount;
 
 
     @BeforeEach
@@ -45,6 +45,7 @@ public class JourneyRealizeHandlerTest {
         this.point = new GeographicPoint(2500, 2500);
         this.date = LocalDateTime.now();
         this.vehicle = new PMVehicle(vehicleId, point);
+        this.amount = new BigDecimal(10);
     }
 
     @Test
@@ -113,6 +114,28 @@ public class JourneyRealizeHandlerTest {
         arduinoMicroController.setBTconnection();
         journeyRH.startDriving();
         assertDoesNotThrow(() -> journeyRH.stopDriving());
+    }
+
+    @Test
+    public void selectPaymentTestBadOptionCase(){
+        assertThrows(ProceduralException.class, () -> journeyRH.selectPayment('j'));
+    }
+
+    @Test
+    public void selectPaymentTestSuccessfullyCase(){
+        assertDoesNotThrow(() -> journeyRH.selectPayment('B'));
+    }
+
+    @Test
+    public void realizePaymentTestIllegalArgumentCase(){
+       assertThrows(IllegalArgumentException.class, () -> journeyRH.realizePayment(null));
+    }
+
+    @Test
+    public void realizePaymentTestSuccessfullyCase() throws NotEnoughWalletException, ConnectException, CorruptedImgException, InvalidPairingArgsException, ProceduralException, PMVNotAvailException {
+        journeyRH.scanQR(img,user,station,point,date);
+        journeyRH.incrementWalletUser(500);
+        journeyRH.realizePayment(amount);
     }
 
 }

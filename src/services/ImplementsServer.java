@@ -60,6 +60,7 @@ public class ImplementsServer implements Server {
         if (servID == null || user == null || imp == null) {
             throw new IllegalArgumentException("Invalid arguments for registering payment");
         }
+        user.getWallet().pay(imp.floatValue());
         System.out.println("Registering payment: " + servID + " , " + user + ", Import=" + imp + " , Method=" + payMeth);
     }
 }

@@ -23,7 +23,6 @@ public class WalletPayment {
         if (user.getWallet().getBalance() <= 0 || user.getWallet().getBalance() < amount.floatValue()) {
             throw new NotEnoughWalletException("Not enough balance");
         }
-        user.getWallet().pay(amount.floatValue());
         server.registerPayment(serviceID, user, amount, paymentMethod);
     }
 }
